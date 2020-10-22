@@ -9,7 +9,7 @@ from vbb_loader.transformers.vbb_transformers import get_transformer
 
 LOGGER = setup.logger('TableLoader')
 
-BATCH_SIZE = 100
+BATCH_SIZE = 1000
 
 
 class TableLoader:
@@ -43,6 +43,7 @@ class TableLoader:
                     buffer.append(val)
                 self.__flush_batch_if_required(buffer)
 
+            # Notify the transformer about the file finishing. For stateful transformers this is a way to get them to flush the remaining content.
             val = self.transformer.eof()
             if val is not None:
                 buffer.append(val)
