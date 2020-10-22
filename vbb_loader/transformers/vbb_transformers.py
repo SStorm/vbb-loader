@@ -88,11 +88,17 @@ class RoutesTransformer(VbbTransformer):
         return ['agency_id', 'route_type']
 
 
+class StopTimesTransformer(VbbTransformer):
+    def int_columns(self):
+        return ['trip_id', 'stop_sequence', 'pickup_type', 'drop_off_type']
+
+
 TRANSFORMERS = {
     f'{SCHEMA_PREFIX}_agency': AgencyTransformer,
     f'{SCHEMA_PREFIX}_stops': StopTransformer,
     f'{SCHEMA_PREFIX}_calendar_dates': CalendarDatesTransformer,
     f'{SCHEMA_PREFIX}_calendar': CalendarTransformer,
+    f'{SCHEMA_PREFIX}_stop_times': StopTimesTransformer,
 }
 
 

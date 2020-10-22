@@ -64,3 +64,17 @@ CREATE TABLE vbb_routes
     route_text_color VARCHAR (32),
     route_desc VARCHAR (128)
 );
+
+DROP TABLE IF EXISTS vbb_stop_times;
+
+CREATE TABLE vbb_stop_times
+(
+    trip_id INTEGER NOT NULL,
+    arrival_time VARCHAR (16),
+    departure_time VARCHAR (16),
+    stop_id VARCHAR (32),
+    stop_sequence INTEGER,
+    pickup_type INTEGER,
+    drop_off_type INTEGER,
+    stop_headsign VARCHAR (64)
+);
