@@ -4,6 +4,9 @@ from typing import Sequence, List, Tuple
 
 from vbb_loader.schema.init import SCHEMA_PREFIX
 
+class TableNotSupportedException(Exception):
+    pass
+
 
 class VbbTransformer:
     def column_names(self, fields: Sequence[str]) -> List[str]:
@@ -114,6 +117,7 @@ TRANSFORMERS = {
     f'{SCHEMA_PREFIX}_stops': StopTransformer,
     f'{SCHEMA_PREFIX}_calendar_dates': CalendarDatesTransformer,
     f'{SCHEMA_PREFIX}_calendar': CalendarTransformer,
+    f'{SCHEMA_PREFIX}_routes': RoutesTransformer,
     f'{SCHEMA_PREFIX}_stop_times': StopTimesTransformer,
     f'{SCHEMA_PREFIX}_transfers': TransfersTransformer,
     f'{SCHEMA_PREFIX}_trips': TripsTransformer,
@@ -123,4 +127,4 @@ TRANSFORMERS = {
 def get_transformer(table) -> VbbTransformer:
     if table in TRANSFORMERS.keys():
         return TRANSFORMERS[table]()
-    return VbbTransformer()
+    raise TableNotSupportedException(f'No transformer for table {table}')

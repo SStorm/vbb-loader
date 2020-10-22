@@ -15,8 +15,9 @@ BATCH_SIZE = 500
 class TableLoader:
     def __init__(self, file_to_import: str, url: str, user: str, password: str, truncate=False):
         self.file_to_import = file_to_import
-        self.client = DbClient(url, user, password)
         self.table = self.__table_from_filename(file_to_import)
+        self.transformer = get_transformer(self.table)
+        self.client = DbClient(url, user, password)
         self.counter = 0
         self.insert_statement = ''
         self.truncate = truncate
@@ -32,18 +33,17 @@ class TableLoader:
         LOGGER.info("Will load file '%s' to table '%s'", self.file_to_import, self.table)
         with open(self.file_to_import, mode='r') as input_file:
             csvfile = csv.DictReader(input_file)
-            transformer = get_transformer(self.table)
-            column_names = transformer.column_names(csvfile.fieldnames)
+            column_names = self.transformer.column_names(csvfile.fieldnames)
             self.insert_statement = self.__generate_insert(self.table, column_names)
 
             buffer = []
             for row in csvfile:
-                buffer.append(transformer.column_values(row))
+                buffer.append(self.transformer.column_values(row))
                 self.__flush_batch_if_required(buffer)
 
             self.__flush_batch_if_required(buffer, force=True)
 
-            LOGGER.info("Done")
+            LOGGER.info(f"Loaded {self.counter} rows")
 
     def __flush_batch_if_required(self, buffer: list, force=False):
         if len(buffer) >= BATCH_SIZE or force:
