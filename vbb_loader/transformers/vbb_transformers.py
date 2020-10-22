@@ -59,7 +59,7 @@ class StopTransformer(VbbTransformer):
             if col in row:
                 ret.append(self.typed_value(col, row[col]))
         # Now transform and append the location
-        ret.append([float(row['stop_lat']), float(row['stop_lon'])])
+        ret.append([float(row['stop_lon']), float(row['stop_lat'])])
         return tuple(ret)
 
     def bool_columns(self):
