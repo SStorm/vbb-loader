@@ -5,6 +5,20 @@
 - Attempting to use PGSQL compatibility as much as possible, w/o doing anything crate-specific
 - Using Python 3.8.2 (others might work too) in .python-version (pyenv)
 
+## IN PROGRESS
+
+Setup:
+
+    python -m venv venv
+    pip install -r requirements.txt
+
+Start with:
+    
+    docker run -p "4200:4200" -p 5432:5432 crate
+    
+Migration with:
+
+    python -m vbb_loader.schema.init "http://localhost:4200" "crate" ""
 
 ## Work log
 
