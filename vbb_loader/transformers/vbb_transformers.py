@@ -4,6 +4,7 @@ from typing import Sequence, List, Tuple
 
 from vbb_loader.schema.init import SCHEMA_PREFIX
 
+
 class TableNotSupportedException(Exception):
     pass
 
@@ -35,6 +36,9 @@ class VbbTransformer:
 
     def date_columns(self):
         return []
+
+    def eof(self):
+        pass
 
 
 class StopTransformer(VbbTransformer):
@@ -112,6 +116,48 @@ class TripsTransformer(VbbTransformer):
         return ['wheelchair_accessible', 'bikes_allowed']
 
 
+class ShapesTransformer(VbbTransformer):
+    def __init__(self):
+        self.shape_id = None
+        self.points = []
+        self.to_return = None
+
+    def column_names(self, fields: Sequence[str]) -> List[str]:
+        return ['shape_id', 'shape']
+
+    def column_values(self, row: dict) -> Tuple:
+        self.to_return = None
+
+        if self.shape_id is None:
+            self.shape_id = row['shape_id']
+
+        if self.shape_id != row['shape_id']:
+            # new shape!
+            if len(set(self.points)) == 1:
+                # all the points are the same, invalid geometry - will ignore
+                self.shape_id = row['shape_id']
+                self.points.clear()
+            else:
+                linestring = ','.join(self.points)
+                self.to_return = (
+                    int(self.shape_id),
+                    f'LINESTRING ({linestring})'
+                )
+                self.shape_id = row['shape_id']
+                self.points.clear()
+        self.points.append("{p1} {p2}".format(p1=row['shape_pt_lon'], p2=row['shape_pt_lat']))
+        return self.to_return
+
+    def eof(self):
+        if len(set(self.points)) == 1:
+            return None
+        linestring = ','.join(self.points)
+        return (
+            int(self.shape_id),
+            f'LINESTRING ({linestring})'
+        )
+
+
 TRANSFORMERS = {
     f'{SCHEMA_PREFIX}_agency': AgencyTransformer,
     f'{SCHEMA_PREFIX}_stops': StopTransformer,
@@ -121,6 +167,7 @@ TRANSFORMERS = {
     f'{SCHEMA_PREFIX}_stop_times': StopTimesTransformer,
     f'{SCHEMA_PREFIX}_transfers': TransfersTransformer,
     f'{SCHEMA_PREFIX}_trips': TripsTransformer,
+    f'{SCHEMA_PREFIX}_shapes': ShapesTransformer
 }
 
 

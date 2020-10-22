@@ -108,3 +108,11 @@ CREATE TABLE vbb_trips
     wheelchair_accessible BOOLEAN,
     bikes_allowed BOOLEAN
 );
+
+DROP TABLE IF EXISTS vbb_shapes;
+
+CREATE TABLE vbb_shapes
+(
+    shape_id INTEGER NOT NULL,
+    shape geo_shape
+);

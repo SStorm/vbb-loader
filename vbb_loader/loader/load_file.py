@@ -9,7 +9,7 @@ from vbb_loader.transformers.vbb_transformers import get_transformer
 
 LOGGER = setup.logger('TableLoader')
 
-BATCH_SIZE = 500
+BATCH_SIZE = 100
 
 
 class TableLoader:
@@ -38,15 +38,20 @@ class TableLoader:
 
             buffer = []
             for row in csvfile:
-                buffer.append(self.transformer.column_values(row))
+                val = self.transformer.column_values(row)
+                if val is not None:
+                    buffer.append(val)
                 self.__flush_batch_if_required(buffer)
 
+            val = self.transformer.eof()
+            if val is not None:
+                buffer.append(val)
             self.__flush_batch_if_required(buffer, force=True)
 
             LOGGER.info(f"Loaded {self.counter} rows")
 
     def __flush_batch_if_required(self, buffer: list, force=False):
-        if len(buffer) >= BATCH_SIZE or force:
+        if len(buffer) >= BATCH_SIZE or (force and len(buffer) > 0):
             self.__do_insert(self.client, self.insert_statement, buffer)
             self.counter += len(buffer)
             LOGGER.debug('Inserted %d into %s', self.counter, self.table)
