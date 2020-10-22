@@ -14,7 +14,7 @@ class VbbTransformer:
 
     def typed_value(self, column_name, value):
         if column_name in self.int_columns():
-            return int(value)
+            return int(value) if len(value) > 0 else 0
         if column_name in self.bool_columns():
             return bool(value)
         if column_name in self.date_columns():
@@ -93,12 +93,18 @@ class StopTimesTransformer(VbbTransformer):
         return ['trip_id', 'stop_sequence', 'pickup_type', 'drop_off_type']
 
 
+class TransfersTransformer(VbbTransformer):
+    def int_columns(self):
+        return ['transfer_type', 'min_transfer_time']
+
+
 TRANSFORMERS = {
     f'{SCHEMA_PREFIX}_agency': AgencyTransformer,
     f'{SCHEMA_PREFIX}_stops': StopTransformer,
     f'{SCHEMA_PREFIX}_calendar_dates': CalendarDatesTransformer,
     f'{SCHEMA_PREFIX}_calendar': CalendarTransformer,
     f'{SCHEMA_PREFIX}_stop_times': StopTimesTransformer,
+    f'{SCHEMA_PREFIX}_transfers': TransfersTransformer,
 }
 
 

@@ -78,3 +78,17 @@ CREATE TABLE vbb_stop_times
     drop_off_type INTEGER,
     stop_headsign VARCHAR (64)
 );
+
+DROP TABLE IF EXISTS vbb_transfers;
+
+CREATE TABLE vbb_transfers
+(
+    from_stop_id VARCHAR (32),
+    to_stop_id VARCHAR (32),
+    transfer_type INTEGER,
+    min_transfer_time INTEGER,
+    from_route_id VARCHAR (32),
+    to_route_id VARCHAR (32),
+    from_trip_id VARCHAR (32),
+    to_trip_id VARCHAR (32)
+);
