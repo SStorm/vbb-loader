@@ -13,8 +13,11 @@ class VbbTransformer:
         return tuple([self.typed_value(v[0], v[1]) for v in row.items()])
 
     def typed_value(self, column_name, value):
+        if len(value) == 0:
+            return None
+
         if column_name in self.int_columns():
-            return int(value) if len(value) > 0 else 0
+            return int(value)
         if column_name in self.bool_columns():
             return bool(value)
         if column_name in self.date_columns():
@@ -95,7 +98,15 @@ class StopTimesTransformer(VbbTransformer):
 
 class TransfersTransformer(VbbTransformer):
     def int_columns(self):
-        return ['transfer_type', 'min_transfer_time']
+        return ['transfer_type', 'min_transfer_time', 'from_trip_id', 'to_trip_id']
+
+
+class TripsTransformer(VbbTransformer):
+    def int_columns(self):
+        return ['service_id', 'trip_id', 'direction_id', 'block_id', 'shape_id']
+
+    def bool_columns(self):
+        return ['wheelchair_accessible', 'bikes_allowed']
 
 
 TRANSFORMERS = {
@@ -105,6 +116,7 @@ TRANSFORMERS = {
     f'{SCHEMA_PREFIX}_calendar': CalendarTransformer,
     f'{SCHEMA_PREFIX}_stop_times': StopTimesTransformer,
     f'{SCHEMA_PREFIX}_transfers': TransfersTransformer,
+    f'{SCHEMA_PREFIX}_trips': TripsTransformer,
 }
 
 

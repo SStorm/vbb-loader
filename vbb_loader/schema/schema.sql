@@ -89,6 +89,22 @@ CREATE TABLE vbb_transfers
     min_transfer_time INTEGER,
     from_route_id VARCHAR (32),
     to_route_id VARCHAR (32),
-    from_trip_id VARCHAR (32),
-    to_trip_id VARCHAR (32)
+    from_trip_id INTEGER,
+    to_trip_id INTEGER
+);
+
+DROP TABLE IF EXISTS vbb_trips;
+
+CREATE TABLE vbb_trips
+(
+    route_id VARCHAR (32),
+    service_id INTEGER,
+    trip_id INTEGER,
+    trip_headsign VARCHAR (64),
+    trip_short_name VARCHAR (64),
+    direction_id INTEGER,
+    block_id INTEGER,
+    shape_id INTEGER,
+    wheelchair_accessible BOOLEAN,
+    bikes_allowed BOOLEAN
 );
