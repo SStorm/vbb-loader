@@ -26,6 +26,10 @@ class VbbTransformer:
 
 class StopTransformer(VbbTransformer):
 
+    @staticmethod
+    def supports_table(name):
+        return name == f"{SCHEMA_PREFIX}_stops"
+
     def column_names(self, fields: Sequence[str]) -> List[str]:
         ret = []
         ignore = ['stop_lat', 'stop_lon']
@@ -53,7 +57,22 @@ class StopTransformer(VbbTransformer):
         return ['location_type']
 
 
+class AgencyTransformer(VbbTransformer):
+    @staticmethod
+    def supports_table(name):
+        return name == f"{SCHEMA_PREFIX}_agency"
+
+    def int_columns(self):
+        return ['agency_id']
+
+
+TRANSFORMERS = {
+    f'{SCHEMA_PREFIX}_agency': AgencyTransformer,
+    f'{SCHEMA_PREFIX}_stops': StopTransformer
+}
+
+
 def get_transformer(table) -> VbbTransformer:
-    if table == f"{SCHEMA_PREFIX}_stops":
-        return StopTransformer()
+    if table in TRANSFORMERS.keys():
+        return TRANSFORMERS[table]()
     return VbbTransformer()

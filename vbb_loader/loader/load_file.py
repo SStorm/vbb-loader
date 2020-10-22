@@ -7,22 +7,27 @@ from vbb_loader.client.db_client import DbClient
 from vbb_loader.schema.init import SCHEMA_PREFIX
 from vbb_loader.transformers.vbb_transformers import get_transformer
 
-LOGGER = setup.logger(__name__)
+LOGGER = setup.logger('TableLoader')
 
 BATCH_SIZE = 500
 
 
 class TableLoader:
-    def __init__(self, file_to_import: str, url: str, user: str, password: str):
+    def __init__(self, file_to_import: str, url: str, user: str, password: str, truncate=False):
         self.file_to_import = file_to_import
         self.client = DbClient(url, user, password)
         self.table = self.__table_from_filename(file_to_import)
         self.counter = 0
         self.insert_statement = ''
+        self.truncate = truncate
 
     def load(self):
         if self.counter != 0:
             raise RuntimeError('This instance has already finished inserting')
+
+        if self.truncate:
+            LOGGER.info(f'Truncation of table {self.table} requested')
+            self.client.cursor().execute(f'DELETE FROM {self.table}')
 
         LOGGER.info("Will load file '%s' to table '%s'", self.file_to_import, self.table)
         with open(self.file_to_import, mode='r') as input_file:
@@ -84,4 +89,4 @@ if __name__ == '__main__':
     url = sys.argv[2]
     user = sys.argv[3]
     password = sys.argv[4]
-    TableLoader(file, url, user, password).load()
+    TableLoader(file, url, user, password, truncate=True).load()
