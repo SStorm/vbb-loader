@@ -4,8 +4,10 @@
 
 1. Start an instance of crate with:
 
-    docker run -p "4200:4200" -p 5432:5432 crate
-    
+```
+docker run -p "4200:4200" -p 5432:5432 crate
+```
+ 
 2. Download the VBB transit dataset and put it in some folder (unzipped), my folder looks like this:
 
 ```
@@ -90,7 +92,7 @@ Note that schema initialization will always nuke the database...
 
 This seemed like a classic piece of ETL. I initially attempted to use the PostgreSQL python libraries
 to connect to crate that way, but had no success due to various errors connecting and gave up after an hour.
-Then proceded to use the official crate client lib, which worked fine. 
+Then proceeded to use the official crate client lib, which worked fine. 
 
 Schema creation is done in vbb_loader/schema/init.py, which is a simple script that loads and executes schema.sql. 
 It doesn't attempt to be very smart and splits by ';', which is sufficient in this simple case.
@@ -116,6 +118,7 @@ This has been tested on Linux and macOS, I hope you won't try it on Windows beca
 
 In general, I found the geo_shape stuff to be the most interesting, as I haven't done anything with geo data before. 
 This was also trickiest to get right and took quite a few attempts before it worked correctly (I think). 
+Even though you can click on the shape in the crate GUI and it takes you to geojson.io, that fails to parse - I suspect it might be an issue with crate rather than the data?
 Because Crate is not super popular, it's generally more difficult to find answers to questions online, so there was a lot of trial and error.
 
 In any case, regardless of how this goes ahead, this was fun and I thank you for the challenge :)
