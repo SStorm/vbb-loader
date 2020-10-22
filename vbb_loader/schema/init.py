@@ -1,24 +1,21 @@
 import sys
 import pathlib
 
-from crate import client
-
-from . import setup
+from vbb_loader.logging import setup
+from vbb_loader.client.db_client import DbClient
 
 LOGGER = setup.logger(__name__)
+
+SCHEMA_PREFIX = 'vbb'
 
 
 # Note: ability to connect to multiple nodes has been de-scoped
 def migrate(db_url: str, username: str, password: str):
-    LOGGER.info("Will connect to CrateDB at '%s' ...", db_url)
-    conn = client.connect(db_url, username=username, password=password)
-    cursor = conn.cursor()
-    cursor.execute("SELECT 1")
-    LOGGER.info("Success")
+    client = DbClient(db_url, username, password)
 
     with open(pathlib.Path(__file__).parent / 'schema.sql', mode='r') as file:
         sql = file.read()
-        cursor = conn.cursor()
+        cursor = client.cursor()
 
         # This is a bit naive, however I couldn't figure out a way of executing the whole SQL against crate
         for statement in sql.split(';'):
