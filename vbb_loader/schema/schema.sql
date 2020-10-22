@@ -26,9 +26,27 @@ CREATE TABLE vbb_agency
     agency_phone VARCHAR(32)
 );
 
+DROP TABLE IF EXISTS vbb_calendar_dates;
+
 CREATE TABLE vbb_calendar_dates
 (
     service_id INTEGER NOT NULL,
     "date" TIMESTAMP,
     exception_type INTEGER
+);
+
+DROP TABLE IF EXISTS vbb_calendar;
+
+CREATE TABLE vbb_calendar
+(
+    service_id INTEGER NOT NULL,
+    monday BOOLEAN,
+    tuesday BOOLEAN,
+    wednesday BOOLEAN,
+    thursday BOOLEAN,
+    friday BOOLEAN,
+    saturday BOOLEAN,
+    sunday BOOLEAN,
+    "start_date" TIMESTAMP,
+    "end_date" TIMESTAMP
 );

@@ -72,10 +72,22 @@ class CalendarDatesTransformer(VbbTransformer):
         return ['date']
 
 
+class CalendarTransformer(VbbTransformer):
+    def int_columns(self):
+        return ['service_id', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+
+    def bool_columns(self):
+        return ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+
+    def date_columns(self):
+        return ['start_date', 'end_date']
+
+
 TRANSFORMERS = {
     f'{SCHEMA_PREFIX}_agency': AgencyTransformer,
     f'{SCHEMA_PREFIX}_stops': StopTransformer,
-    f'{SCHEMA_PREFIX}_calendar_dates': CalendarDatesTransformer
+    f'{SCHEMA_PREFIX}_calendar_dates': CalendarDatesTransformer,
+    f'{SCHEMA_PREFIX}_calendar': CalendarTransformer,
 }
 
 
