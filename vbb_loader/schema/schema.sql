@@ -50,3 +50,17 @@ CREATE TABLE vbb_calendar
     "start_date" TIMESTAMP,
     "end_date" TIMESTAMP
 );
+
+DROP TABLE IF EXISTS vbb_routes;
+
+CREATE TABLE vbb_routes
+(
+    route_id VARCHAR (32) NOT NULL,
+    agency_id INTEGER,
+    route_short_name VARCHAR (32),
+    route_long_name VARCHAR (64),
+    route_type INTEGER,
+    route_color VARCHAR (32),
+    route_text_color VARCHAR (32),
+    route_desc VARCHAR (128)
+);
