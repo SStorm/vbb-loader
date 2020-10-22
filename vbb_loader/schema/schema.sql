@@ -25,3 +25,10 @@ CREATE TABLE vbb_agency
     agency_lang VARCHAR(2),
     agency_phone VARCHAR(32)
 );
+
+CREATE TABLE vbb_calendar_dates
+(
+    service_id INTEGER NOT NULL,
+    "date" TIMESTAMP,
+    exception_type INTEGER
+);

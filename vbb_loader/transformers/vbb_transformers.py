@@ -1,3 +1,5 @@
+import datetime
+
 from typing import Sequence, List, Tuple
 
 from vbb_loader.schema.init import SCHEMA_PREFIX
@@ -8,13 +10,15 @@ class VbbTransformer:
         return [f for f in fields]
 
     def column_values(self, row: dict) -> Tuple:
-        return tuple(row.values())
+        return tuple([self.typed_value(v[0], v[1]) for v in row.items()])
 
     def typed_value(self, column_name, value):
         if column_name in self.int_columns():
             return int(value)
         if column_name in self.bool_columns():
             return bool(value)
+        if column_name in self.date_columns():
+            return datetime.datetime.strptime(value, '%Y%m%d')
         return value
 
     def bool_columns(self):
@@ -23,13 +27,11 @@ class VbbTransformer:
     def int_columns(self):
         return []
 
+    def date_columns(self):
+        return []
+
 
 class StopTransformer(VbbTransformer):
-
-    @staticmethod
-    def supports_table(name):
-        return name == f"{SCHEMA_PREFIX}_stops"
-
     def column_names(self, fields: Sequence[str]) -> List[str]:
         ret = []
         ignore = ['stop_lat', 'stop_lon']
@@ -58,17 +60,22 @@ class StopTransformer(VbbTransformer):
 
 
 class AgencyTransformer(VbbTransformer):
-    @staticmethod
-    def supports_table(name):
-        return name == f"{SCHEMA_PREFIX}_agency"
-
     def int_columns(self):
         return ['agency_id']
 
 
+class CalendarDatesTransformer(VbbTransformer):
+    def int_columns(self):
+        return ['service_id', 'exception_type']
+
+    def date_columns(self):
+        return ['date']
+
+
 TRANSFORMERS = {
     f'{SCHEMA_PREFIX}_agency': AgencyTransformer,
-    f'{SCHEMA_PREFIX}_stops': StopTransformer
+    f'{SCHEMA_PREFIX}_stops': StopTransformer,
+    f'{SCHEMA_PREFIX}_calendar_dates': CalendarDatesTransformer
 }
 
 
