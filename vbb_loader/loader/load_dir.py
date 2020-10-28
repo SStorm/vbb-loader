@@ -23,7 +23,8 @@ if __name__ == '__main__':
     files = [f for f in listdir(dir) if isfile(join(dir, f)) and f.endswith('.txt')]
     for f in files:
         try:
-            TableLoader(join(dir, f), url, user, password).load()
+            with TableLoader(join(dir, f), url, user, password) as loader:
+                loader.load()
         except TableNotSupportedException:
             LOGGER.warning(f'No such table for file {f}')
 

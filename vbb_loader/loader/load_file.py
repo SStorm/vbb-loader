@@ -15,12 +15,23 @@ BATCH_SIZE = 1000
 class TableLoader:
     def __init__(self, file_to_import: str, url: str, user: str, password: str, truncate=False):
         self.file_to_import = file_to_import
+        self.url = url
+        self.user = user
+        self.password = password
         self.table = self.__table_from_filename(file_to_import)
         self.transformer = get_transformer(self.table)
-        self.client = DbClient(url, user, password)
         self.counter = 0
         self.insert_statement = ''
         self.truncate = truncate
+
+    def __enter__(self):
+        self.client = DbClient(self.url, self.user, self.password)
+        self.client.cursor().execute(f"ALTER TABLE {self.table} SET (refresh_interval = 0);")
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.client.cursor().execute(f"ALTER TABLE {self.table} SET (refresh_interval = 1000);")
+        self.client.close()
 
     def load(self):
         if self.counter != 0:
@@ -95,4 +106,5 @@ if __name__ == '__main__':
     url = sys.argv[2]
     user = sys.argv[3]
     password = sys.argv[4]
-    TableLoader(file, url, user, password, truncate=True).load()
+    with TableLoader(file, url, user, password, truncate=True) as loader:
+        loader.load()

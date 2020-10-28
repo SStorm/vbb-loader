@@ -5,8 +5,10 @@
 1. Start an instance of crate with:
 
 ```
-docker run -p "4200:4200" -p 5432:5432 crate
+docker run -p "4200:4200" -v `pwd`/crate:/data crate
 ```
+
+Note that this will create the data directory in your current working dir. Adjust as necessary.
  
 2. Download the VBB transit dataset and put it in some folder (unzipped), my folder looks like this:
 
